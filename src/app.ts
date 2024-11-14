@@ -30,6 +30,10 @@ app.get("/health", (_req, res) => {
 	res.status(200).json({ status: "ok" });
 });
 
+app.get('/api/public', (req, res) => {
+	res.json({ message: 'This is a public endpoint' });
+  });
+
 app.get("/api/protected", checkJwt, extractUserId, (req, res) => {
 	res.json({
 		message: "You are authenticated!",
