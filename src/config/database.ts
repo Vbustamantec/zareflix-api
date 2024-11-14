@@ -4,17 +4,10 @@ export class Database {
 	private static instance: Database;
 	private client: MongoClient | null = null;
 	private db: Db | null = null;
+	private readonly uri: string = process.env.MONGODB_URI as string;
+	private readonly dbName: string = process.env.MONGODB_DB_NAME as string;
 
-	private constructor() {
-		if (!process.env.MONGODB_URI) {
-			throw new Error("MONGODB_URI is not defined in environment variables");
-		}
-		if (!process.env.MONGODB_DB_NAME) {
-			throw new Error(
-				"MONGODB_DB_NAME is not defined in environment variables"
-			);
-		}
-	}
+	private constructor() {}
 
 	public static getInstance(): Database {
 		if (!Database.instance) {
@@ -25,13 +18,20 @@ export class Database {
 
 	public async connect(): Promise<void> {
 		if (!this.client) {
-			this.client = await MongoClient.connect(
-				process.env.MONGODB_URI as string
-			);
-			this.db = this.client.db(process.env.MONGODB_DB_NAME);
-			console.log(
-				`Connected to MongoDB database: ${process.env.MONGODB_DB_NAME}`
-			);
+			try {
+				const options = {
+					useNewUrlParser: true,
+					useUnifiedTopology: true,
+					serverSelectionTimeoutMS: 5000,
+				};
+
+				this.client = await MongoClient.connect(this.uri, options);
+				this.db = this.client.db(this.dbName);
+				console.log(`Connected to MongoDB: ${this.dbName}`);
+			} catch (error) {
+				console.error("Failed to connect to MongoDB", error);
+				throw error;
+			}
 		}
 	}
 
@@ -42,3 +42,5 @@ export class Database {
 		return this.db;
 	}
 }
+
+export default Database;
