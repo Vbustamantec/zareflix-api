@@ -1,13 +1,27 @@
 import { MongoClient, Db } from "mongodb";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export class Database {
 	private static instance: Database;
 	private client: MongoClient | null = null;
 	private db: Db | null = null;
-	private readonly uri: string = process.env.MONGODB_URI as string;
-	private readonly dbName: string = process.env.MONGODB_DB_NAME as string;
 
-	private constructor() {}
+	private constructor() {
+		const uri = process.env.MONGODB_URI;
+		const dbName = process.env.MONGODB_DB_NAME;
+
+		if (!uri) {
+			throw new Error("MONGODB_URI is not defined in environment variables");
+		}
+
+		if (!dbName) {
+			throw new Error(
+				"MONGODB_DB_NAME is not defined in environment variables"
+			);
+		}
+	}
 
 	public static getInstance(): Database {
 		if (!Database.instance) {
@@ -19,17 +33,16 @@ export class Database {
 	public async connect(): Promise<void> {
 		if (!this.client) {
 			try {
-				const options = {
-					useNewUrlParser: true,
-					useUnifiedTopology: true,
-					serverSelectionTimeoutMS: 5000,
-				};
+				const uri = process.env.MONGODB_URI;
+				if (!uri) {
+					throw new Error("MONGODB_URI is not defined");
+				}
 
-				this.client = await MongoClient.connect(this.uri, options);
-				this.db = this.client.db(this.dbName);
-				console.log(`Connected to MongoDB: ${this.dbName}`);
+				this.client = await MongoClient.connect(uri);
+				this.db = this.client.db(process.env.MONGODB_DB_NAME);
+				console.log("Connected to MongoDB successfully");
 			} catch (error) {
-				console.error("Failed to connect to MongoDB", error);
+				console.error("Failed to connect to MongoDB:", error);
 				throw error;
 			}
 		}
@@ -37,9 +50,17 @@ export class Database {
 
 	public getDb(): Db {
 		if (!this.db) {
-			throw new Error("Database not connected");
+			throw new Error("Database not connected. Call connect() first.");
 		}
 		return this.db;
+	}
+
+	public async disconnect(): Promise<void> {
+		if (this.client) {
+			await this.client.close();
+			this.client = null;
+			this.db = null;
+		}
 	}
 }
 
