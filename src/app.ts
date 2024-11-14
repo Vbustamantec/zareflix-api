@@ -1,10 +1,10 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
 import cors from "cors";
 import { checkJwt, errorHandler } from "./middlewares/auth.middleware";
 import Database from "./config/database";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
