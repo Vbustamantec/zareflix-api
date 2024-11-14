@@ -3,7 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
-import { checkJwt, errorHandler } from "./middlewares/auth.middleware";
+import { checkJwt, extractUserId, errorHandler } from './middlewares/auth.middleware';
 import Database from "./config/database";
 
 const app = express();
@@ -26,7 +26,12 @@ app.get("/health", (_req, res) => {
 	res.status(200).json({ status: "ok" });
 });
 
-app.use("/api", checkJwt);
+app.get('/api/protected', checkJwt, extractUserId, (req, res) => {
+	res.json({ 
+	  message: 'You are authenticated!',
+	  userId: req.userId
+	});
+  });
 
 app.use(errorHandler);
 
