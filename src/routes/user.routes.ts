@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from "express";
-import { checkJwt } from "../middlewares/auth.middleware";
 import { AppError } from "../utils/errorHandler";
 import { attachUserRepository } from "../middlewares/repository.middleware";
 import { UserRepository } from "../repositories/user.repository";
@@ -10,39 +9,34 @@ interface ReqLocal extends Request {
 	userRepository?: UserRepository;
 }
 
-router.use(attachUserRepository, checkJwt);
+router.use(attachUserRepository);
 
-router.get(
-	"/me",
-	checkJwt,
-	async (req: ReqLocal, res: Response, next: NextFunction) => {
-		try {
-			const repository = req.userRepository!;
-			const auth0Id = req.auth?.payload.sub;
+router.get("/me", async (req: ReqLocal, res: Response, next: NextFunction) => {
+	try {
+		const repository = req.userRepository!;
+		const auth0Id = req.auth?.payload.sub;
 
-			if (!auth0Id) {
-				throw new AppError(401, "No auth0Id found");
-			}
-
-			const user = await repository.findByAuth0Id(auth0Id);
-
-			if (!user) {
-				throw new AppError(404, "User not found");
-			}
-
-			res.json({
-				success: true,
-				data: user,
-			});
-		} catch (error) {
-			next(error);
+		if (!auth0Id) {
+			throw new AppError(401, "No auth0Id found");
 		}
+
+		const user = await repository.findByAuth0Id(auth0Id);
+
+		if (!user) {
+			throw new AppError(404, "User not found");
+		}
+
+		res.json({
+			success: true,
+			data: user,
+		});
+	} catch (error) {
+		next(error);
 	}
-);
+});
 
 router.post(
 	"/sync",
-	checkJwt,
 	async (req: ReqLocal, res: Response, next: NextFunction) => {
 		try {
 			const repository = req.userRepository!;

@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from "express";
-import { checkJwt } from "../middlewares/auth.middleware";
 import { syncUser } from "../middlewares/userSync.middleware";
 import { AppError } from "../utils/errorHandler";
 import { attachFavoriteMovieRepository } from "../middlewares/repository.middleware";
@@ -11,7 +10,7 @@ interface ReqLocal extends Request {
 
 const router = express.Router();
 
-router.use(attachFavoriteMovieRepository, checkJwt, syncUser);
+router.use(attachFavoriteMovieRepository,  syncUser);
 
 router.get("/", async (req: ReqLocal, res: Response, next: NextFunction) => {
 	try {
