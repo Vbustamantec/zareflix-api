@@ -4,6 +4,7 @@
 	"description": "Backend API for ZareFlix movie application",
 	"main": "src/app.ts",
 	"scripts": {
+		"vercel-build": "tsc",
 		"start": "ts-node src/app.ts",
 		"dev": "ts-node-dev --respawn src/app.ts",
 		"build": "tsc",
