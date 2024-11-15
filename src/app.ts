@@ -21,6 +21,13 @@ app.use(
 	})
 );
 
+app.get("/", (_req, res) => {
+	res.status(200).json({
+		success: true,
+		message: "Welcome to the API",
+	});
+});
+
 app.use("/api", checkJwt, routes);
 
 app.get("/health", (_req, res) => {

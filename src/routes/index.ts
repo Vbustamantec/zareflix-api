@@ -9,15 +9,7 @@ import { syncUser } from "../middlewares/userSync.middleware";
 
 const router = Router();
 
-router.get(
-	"/public",
-	asyncHandler(async (req, res) => {
-		res.status(200).json({
-			success: true,
-			message: "Public route",
-		});
-	})
-);
+
 
 router.post(
 	"/sync",
