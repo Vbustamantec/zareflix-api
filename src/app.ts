@@ -7,7 +7,6 @@ import cors from "cors";
 import { checkJwt } from "./middlewares/auth.middleware";
 import Database from "./config/database";
 import routes from "./routes/index";
-import { syncUser } from "./middlewares/userSync.middleware";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -23,7 +22,6 @@ app.use(
 );
 
 app.use("/api", checkJwt, routes);
-app.use("/api/favorites", checkJwt, syncUser);
 
 app.get("/health", (_req, res) => {
 	res.status(200).json({ status: "ok" });
