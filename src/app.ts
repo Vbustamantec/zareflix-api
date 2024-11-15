@@ -1,14 +1,13 @@
+"use client ";
 import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
 import cors from "cors";
-import {
-	checkJwt,
-	extractUserId,
-	errorHandler,
-} from "./middlewares/auth.middleware";
+import { checkJwt } from "./middlewares/auth.middleware";
 import Database from "./config/database";
+import routes from "./routes/index";
+import { syncUser } from "./middlewares/userSync.middleware";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,32 +15,19 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(
 	cors({
-		origin: "*" /* [
-			process.env.PROD_FRONTEND_URL || "",
-			process.env.DEV_FRONTEND_URL || "",
-		] */,
+		origin: "*",
 		methods: ["GET", "POST", "PUT", "DELETE"],
 		allowedHeaders: ["Content-Type", "Authorization"],
 		credentials: true,
 	})
 );
 
+app.use("/api", checkJwt, routes);
+app.use("/api/favorites", checkJwt, syncUser);
+
 app.get("/health", (_req, res) => {
 	res.status(200).json({ status: "ok" });
 });
-
-app.get('/api/public', (req, res) => {
-	res.json({ message: 'This is a public endpoint' });
-  });
-
-app.get("/api/protected", checkJwt, extractUserId, (req, res) => {
-	res.json({
-		message: "You are authenticated!",
-		userId: req.userId,
-	});
-});
-
-app.use(errorHandler);
 
 const startServer = async () => {
 	try {

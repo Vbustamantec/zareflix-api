@@ -1,32 +1,18 @@
-import { Request, Response, NextFunction } from 'express';
-import { auth } from 'express-oauth2-jwt-bearer';
-import { AppError } from '../utils/errorHandler';
+import "dotenv/config";
 
-export const checkJwt = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: process.env.AUTH0_ISSUER,
-  tokenSigningAlg: 'RS256'
+import { GetVerificationKey, expressjwt as jwt } from "express-jwt";
+import jwksRsa from "jwks-rsa";
+const issuerBaseUrl = process.env.AUTH0_ISSUER;
+const audience = process.env.AUTH0_AUDIENCE || "http://localhost:5000/";
+
+export const checkJwt = jwt({
+	secret: jwksRsa.expressJwtSecret({
+		cache: true,
+		rateLimit: true,
+		jwksRequestsPerMinute: 5,
+		jwksUri: `${issuerBaseUrl}/.well-known/jwks.json`,
+	}) as GetVerificationKey,
+	audience: audience,
+	issuer: `${issuerBaseUrl}/`,
+	algorithms: ["RS256"],
 });
-
-export const extractUserId = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const userId = req.auth?.payload.sub;
-    if (!userId) {
-      throw new AppError(401, 'User ID not found in token');
-    }
-    req.userId = userId;
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err.name === 'UnauthorizedError') {
-    return res.status(401).json({
-      error: 'Unauthorized',
-      message: 'Invalid or expired token'
-    });
-  }
-  next(err);
-};
