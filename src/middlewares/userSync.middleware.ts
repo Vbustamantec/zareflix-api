@@ -1,20 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "../repositories/user.repository";
 
-declare module "express" {
-	interface Request {
-		auth?: {
-			payload: {
-				sub: string;
-				email?: string;
-				nickname?: string;
-				[key: string]: any;
-			};
-		};
-	}
-}
-
-export const syncUser = (req: Request, res: Response, next: NextFunction) => {
+export const syncUser = async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
 	try {
 		const auth0User = req.auth?.payload;
 
@@ -23,24 +14,20 @@ export const syncUser = (req: Request, res: Response, next: NextFunction) => {
 		}
 
 		const userRepo = new UserRepository();
+		let user = await userRepo.findByAuth0Id(auth0User.sub);
 
-		userRepo
-			.findByAuth0Id(auth0User.sub)
-			.then((user) => {
-				if (!user) {
-					return userRepo.createUser({
-						auth0Id: auth0User.sub,
-						email: auth0User.email as string,
-						nickname: auth0User.nickname as string,
-					});
-				}
-				return userRepo.updateLastLogin(auth0User.sub).then(() => user);
-			})
-			.then((user) => {
-				res.locals.userId = user._id;
-				next();
-			})
-			.catch(next);
+		if (!user) {
+			user = await userRepo.createUser({
+				auth0Id: auth0User.sub,
+				email: auth0User.email as string,
+				nickname: auth0User.nickname as string,
+			});
+		} else {
+			await userRepo.updateLastLogin(auth0User.sub);
+		}
+
+		res.locals.userId = user._id;
+		next();
 	} catch (error) {
 		next(error);
 	}

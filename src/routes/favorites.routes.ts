@@ -1,17 +1,21 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import { checkJwt } from "../middlewares/auth.middleware";
 import { syncUser } from "../middlewares/userSync.middleware";
-import { FavoriteMovieRepository } from "../repositories/favoriteMovie.repository";
 import { AppError } from "../utils/errorHandler";
+import { attachFavoriteMovieRepository } from "../middlewares/repository.middleware";
+import { FavoriteMovieRepository } from "../repositories/favoriteMovie.repository";
+
+interface ReqLocal extends Request {
+	favoriteMovieRepository?: FavoriteMovieRepository;
+}
 
 const router = express.Router();
-const repository = new FavoriteMovieRepository();
 
-router.use(checkJwt, syncUser);
+router.use(attachFavoriteMovieRepository, checkJwt, syncUser);
 
-// GET /api/favorites
-router.get("/", async (req, res, next) => {
+router.get("/", async (req: ReqLocal, res: Response, next: NextFunction) => {
 	try {
+		const repository = req.favoriteMovieRepository!;
 		const userId = res.locals.userId;
 		const favorites = await repository.findByUserId(userId);
 
@@ -24,18 +28,16 @@ router.get("/", async (req, res, next) => {
 	}
 });
 
-// POST /api/favorites
-router.post("/", async (req, res, next) => {
+router.post("/", async (req: ReqLocal, res: Response, next: NextFunction) => {
 	try {
+		const repository = req.favoriteMovieRepository!;
 		const userId = res.locals.userId;
 		const { movieId, title, poster, year } = req.body;
 
-		// Validar datos requeridos
 		if (!movieId || !title) {
 			throw new AppError(400, "Missing required fields");
 		}
 
-		// Verificar si ya existe
 		const existing = await repository.findByUserAndMovie(userId, movieId);
 		if (existing) {
 			throw new AppError(400, "Movie already in favorites");
@@ -58,9 +60,9 @@ router.post("/", async (req, res, next) => {
 	}
 });
 
-// PUT /api/favorites/:id
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", async (req: ReqLocal, res: Response, next: NextFunction) => {
 	try {
+		const repository = req.favoriteMovieRepository!;
 		const userId = res.locals.userId;
 		const { id } = req.params;
 		const { title, personalNotes } = req.body;
@@ -83,24 +85,27 @@ router.put("/:id", async (req, res, next) => {
 	}
 });
 
-// DELETE /api/favorites/:id
-router.delete("/:id", async (req, res, next) => {
-	try {
-		const userId = res.locals.userId;
-		const { id } = req.params;
+router.delete(
+	"/:id",
+	async (req: ReqLocal, res: Response, next: NextFunction) => {
+		try {
+			const repository = req.favoriteMovieRepository!;
+			const userId = res.locals.userId;
+			const { id } = req.params;
 
-		const deleted = await repository.delete(id, userId);
-		if (!deleted) {
-			throw new AppError(404, "Favorite not found");
+			const deleted = await repository.delete(id, userId);
+			if (!deleted) {
+				throw new AppError(404, "Favorite not found");
+			}
+
+			res.json({
+				success: true,
+				message: "Favorite removed successfully",
+			});
+		} catch (error) {
+			next(error);
 		}
-
-		res.json({
-			success: true,
-			message: "Favorite removed successfully",
-		});
-	} catch (error) {
-		next(error);
 	}
-});
+);
 
 export default router;
