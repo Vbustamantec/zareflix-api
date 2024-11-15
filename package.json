@@ -4,9 +4,9 @@
 	"description": "Backend API for ZareFlix movie application",
 	"main": "src/app.ts",
 	"scripts": {
-		"start": "ts-node dist/app.js",
+		"start": "node dist/app.js",
+		"build": "tsc",
 		"dev": "ts-node-dev --respawn src/app.ts",
-		"build": "tsc && mv dist/src/* dist/ && rm -rf dist/sr",
 		"test": "jest",
 		"lint": "eslint src/**/*.ts",
 		"format": "prettier --write \"src/**/*.ts\"",
