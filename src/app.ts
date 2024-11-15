@@ -41,7 +41,8 @@ const startServer = async () => {
 		console.log("Connected to MongoDB");
 
 		app.listen(PORT, () => {
-			console.log(`Server running on http://localhost:${PORT}`);
+			console.log(`Server running on https://zareflix-api.onrender.com
+`);
 		});
 	} catch (error) {
 		console.error("Failed to start server:", error);
