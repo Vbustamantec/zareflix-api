@@ -1,35 +1,37 @@
 import { Router } from "express";
 
 import { asyncHandler } from "../utils/asyncHandler";
-import { checkJwt } from "../middlewares/auth.middleware";
 
 import userRoutes from "./user.routes";
 import favoritesRoutes from "./favorites.routes";
 import { handleError } from "../utils/errorHandler";
+import { syncUser } from "../middlewares/userSync.middleware";
 
 const router = Router();
 
 router.get(
-	"/",
-	checkJwt,
-	asyncHandler(async (req, res, next) => {
-		res.status(200).send({ message: "This is a private route 1" });
+	"/public",
+	asyncHandler(async (req, res) => {
+		res.status(200).json({
+			success: true,
+			message: "Public route",
+		});
 	})
 );
 
-router.get(
-	"/private-route",
-	checkJwt,
-	asyncHandler(async (req, res, next) => {
-		res.status(200).send({ message: "This is a private route 2" });
-	})
-);
+router.post(
+	"/sync",
+	syncUser,
+	asyncHandler(async (req, res) => {
+		const userId = res.locals.userId;
 
-router.get(
-	"/protected",
-	checkJwt,
-	asyncHandler(async (req, res, next) => {
-		res.status(200).send({ message: "This is a private route 3" });
+		res.status(200).json({
+			success: true,
+			message: "User synchronized successfully",
+			data: {
+				userId: userId,
+			},
+		});
 	})
 );
 
