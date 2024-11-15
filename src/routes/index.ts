@@ -9,8 +9,6 @@ import { syncUser } from "../middlewares/userSync.middleware";
 
 const router = Router();
 
-
-
 router.post(
 	"/sync",
 	syncUser,
@@ -26,6 +24,13 @@ router.post(
 		});
 	})
 );
+
+router.get("/private", (_req, res) => {
+	res.status(200).json({
+		success: true,
+		message: "This is a private route",
+	});
+});
 
 router.use("/user", userRoutes);
 router.use("/favorites", favoritesRoutes);
