@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
-import { syncUser } from "../middlewares/userSync.middleware";
 import { AppError } from "../utils/errorHandler";
 import { attachFavoriteMovieRepository } from "../middlewares/repository.middleware";
 import { FavoriteMovieRepository } from "../repositories/favoriteMovie.repository";
+import { syncUser } from "../middlewares/userSync.middleware";
 
 interface ReqLocal extends Request {
 	favoriteMovieRepository?: FavoriteMovieRepository;
@@ -10,7 +10,7 @@ interface ReqLocal extends Request {
 
 const router = express.Router();
 
-router.use(attachFavoriteMovieRepository,  syncUser);
+router.use(attachFavoriteMovieRepository, syncUser);
 
 router.get("/", async (req: ReqLocal, res: Response, next: NextFunction) => {
 	try {
@@ -30,8 +30,8 @@ router.get("/", async (req: ReqLocal, res: Response, next: NextFunction) => {
 router.post("/", async (req: ReqLocal, res: Response, next: NextFunction) => {
 	try {
 		const repository = req.favoriteMovieRepository!;
-		const userId = res.locals.userId;
-		const { movieId, title, poster, year } = req.body;
+
+		const { movieId, title, poster, year, userId } = req.body;
 
 		if (!movieId || !title) {
 			throw new AppError(400, "Missing required fields");

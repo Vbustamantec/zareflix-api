@@ -5,13 +5,11 @@ import { asyncHandler } from "../utils/asyncHandler";
 import userRoutes from "./user.routes";
 import favoritesRoutes from "./favorites.routes";
 import { handleError } from "../utils/errorHandler";
-import { syncUser } from "../middlewares/userSync.middleware";
 
 const router = Router();
 
 router.post(
 	"/sync",
-	syncUser,
 	asyncHandler(async (req, res) => {
 		const userId = res.locals.userId;
 

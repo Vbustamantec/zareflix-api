@@ -1,8 +1,19 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRepository } from "../repositories/user.repository";
 
+interface UserRequest {
+	userRepository?: UserRepository;
+	auth?: {
+		payload: any;
+	};
+	body: {
+		email?: string;
+		nickname?: string;
+	};
+}
+
 export const syncUser = async (
-	req: Request,
+	req: UserRequest,
 	res: Response,
 	next: NextFunction
 ) => {
@@ -26,7 +37,7 @@ export const syncUser = async (
 			await userRepo.updateLastLogin(auth0User.sub);
 		}
 
-		res.locals.userId = user._id;
+		res.locals.userId = auth0User.sub;
 		next();
 	} catch (error) {
 		next(error);
