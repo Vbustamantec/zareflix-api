@@ -1,0 +1,58 @@
+export const GENRE_FALLBACKS: Record<string, string[]> = {
+	Animation: [
+		"1. Inside Out (2015)",
+		"2. Toy Story (1995)",
+		"3. Spirited Away (2001)",
+		"4. The Lion King (1994)",
+		"5. Finding Nemo (2003)",
+	],
+	Adventure: [
+		"1. How to Train Your Dragon (2010)",
+		"2. The Incredibles (2004)",
+		"3. Big Hero 6 (2014)",
+		"4. Moana (2016)",
+		"5. Zootopia (2016)",
+	],
+	Comedy: [
+		"1. Shrek (2001)",
+		"2. Monsters Inc. (2001)",
+		"3. The LEGO Movie (2014)",
+		"4. Kung Fu Panda (2008)",
+		"5. Madagascar (2005)",
+	],
+	Family: [
+		"1. Frozen (2013)",
+		"2. Coco (2017)",
+		"3. Ratatouille (2007)",
+		"4. Up (2009)",
+		"5. Tangled (2010)",
+	],
+	Action: [
+		"1. The Incredibles (2004)",
+		"2. Megamind (2010)",
+		"3. Spider-Man: Into the Spider-Verse (2018)",
+		"4. Big Hero 6 (2014)",
+		"5. Kung Fu Panda (2008)",
+	],
+	Drama: [
+		"1. Grave of the Fireflies (1988)",
+		"2. Wolf Children (2012)",
+		"3. Your Name (2016)",
+		"4. Up (2009)",
+		"5. The Lion King (1994)",
+	],
+	Fantasy: [
+		"1. Spirited Away (2001)",
+		"2. Howl's Moving Castle (2004)",
+		"3. The Secret World of Arrietty (2010)",
+		"4. Coraline (2009)",
+		"5. Rise of the Guardians (2012)",
+	],
+	default: [
+		"1. The Incredibles (2004)",
+		"2. How to Train Your Dragon (2010)",
+		"3. Toy Story (1995)",
+		"4. Spirited Away (2001)",
+		"5. Up (2009)",
+	],
+};

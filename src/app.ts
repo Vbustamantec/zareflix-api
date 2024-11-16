@@ -1,4 +1,3 @@
-"use client ";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -7,6 +6,7 @@ import cors from "cors";
 import { checkJwt } from "./middlewares/auth.middleware";
 import Database from "./config/database";
 import routes from "./routes/index";
+import recommendationsRoutes from "./routes/recommendations.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -28,6 +28,8 @@ app.get("/", (_req, res) => {
 	});
 });
 
+app.use("/recommendations", recommendationsRoutes);
+
 app.use("/api", checkJwt, routes);
 
 app.get("/health", (_req, res) => {
@@ -41,8 +43,7 @@ const startServer = async () => {
 		console.log("Connected to MongoDB");
 
 		app.listen(PORT, () => {
-			console.log(`Server running on https://zareflix-api.onrender.com
-`);
+			console.log(`Server running on http://localhost:${PORT}`);
 		});
 	} catch (error) {
 		console.error("Failed to start server:", error);

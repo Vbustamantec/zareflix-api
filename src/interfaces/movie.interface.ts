@@ -24,3 +24,11 @@ export interface UpdateFavoriteDTO {
 	title?: string;
 	personalNotes?: string;
 }
+
+export interface RecommendedMovie {
+	Title: string;
+	Year: string;
+	Genre: string;
+	Plot: string;
+	[key: string]: any; 
+  }
