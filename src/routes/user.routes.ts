@@ -2,7 +2,6 @@ import express, { Response, NextFunction } from "express";
 import { AppError } from "../utils/errorHandler";
 import { attachUserRepository } from "../middlewares/repository.middleware";
 import { UserRepository } from "../repositories/user.repository";
-import { Logger } from "../utils/logger";
 
 const router = express.Router();
 
