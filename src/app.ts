@@ -7,21 +7,19 @@ import { checkJwt } from "./middlewares/auth.middleware";
 import Database from "./config/database";
 import routes from "./routes/index";
 import recommendationsRoutes from "./routes/recommendations.routes";
-import type { CorsOptions } from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const corsOptions: CorsOptions = {
-	origin: "*",
-	credentials: true,
-	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-	allowedHeaders: ["Authorization", "Content-Type"],
-	exposedHeaders: ["Authorization"],
-};
-
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(
+	cors({
+		origin: "*",
+		methods: ["GET", "POST", "PUT", "DELETE"],
+		allowedHeaders: ["Content-Type", "Authorization"],
+		credentials: true,
+	})
+);
 
 app.get("/", (_req, res) => {
 	res.status(200).json({
