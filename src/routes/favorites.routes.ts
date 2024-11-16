@@ -2,7 +2,6 @@ import express, { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/errorHandler";
 import { attachFavoriteMovieRepository } from "../middlewares/repository.middleware";
 import { FavoriteMovieRepository } from "../repositories/favoriteMovie.repository";
-import { syncUser } from "../middlewares/userSync.middleware";
 
 interface ReqLocal extends Request {
 	favoriteMovieRepository?: FavoriteMovieRepository;
@@ -10,7 +9,7 @@ interface ReqLocal extends Request {
 
 const router = express.Router();
 
-router.use(attachFavoriteMovieRepository, syncUser);
+router.use(attachFavoriteMovieRepository);
 
 router.get("/", async (req: ReqLocal, res: Response, next: NextFunction) => {
 	try {

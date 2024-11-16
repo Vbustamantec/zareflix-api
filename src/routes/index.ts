@@ -1,27 +1,10 @@
 import { Router } from "express";
 
-import { asyncHandler } from "../utils/asyncHandler";
-
 import userRoutes from "./user.routes";
 import favoritesRoutes from "./favorites.routes";
 import { handleError } from "../utils/errorHandler";
 
 const router = Router();
-
-router.post(
-	"/sync",
-	asyncHandler(async (req, res) => {
-		const userId = res.locals.userId;
-
-		res.status(200).json({
-			success: true,
-			message: "User synchronized successfully",
-			data: {
-				userId: userId,
-			},
-		});
-	})
-);
 
 router.get("/private", (_req, res) => {
 	res.status(200).json({
