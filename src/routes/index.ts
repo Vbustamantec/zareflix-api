@@ -3,15 +3,11 @@ import { Router } from "express";
 import userRoutes from "./user.routes";
 import favoritesRoutes from "./favorites.routes";
 import { handleError } from "../utils/errorHandler";
+import { syncUser } from "../middlewares/userSync.middleware";
 
 const router = Router();
 
-router.get("/private", (_req, res) => {
-	res.status(200).json({
-		success: true,
-		message: "This is a private route",
-	});
-});
+router.use(syncUser);
 
 router.use("/user", userRoutes);
 router.use("/favorites", favoritesRoutes);

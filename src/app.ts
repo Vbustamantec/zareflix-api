@@ -7,6 +7,7 @@ import { checkJwt } from "./middlewares/auth.middleware";
 import Database from "./config/database";
 import routes from "./routes/index";
 import recommendationsRoutes from "./routes/recommendations.routes";
+import { syncUser } from "./middlewares/userSync.middleware";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,10 +15,14 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(
 	cors({
-		origin: "*",
-		methods: ["GET", "POST", "PUT", "DELETE"],
-		allowedHeaders: ["Content-Type", "Authorization"],
+		origin: [
+			"https://dev.d1fqa93qe94bl.amplifyapp.com",
+			"http://localhost:3000",
+		],
 		credentials: true,
+		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+		allowedHeaders: ["Authorization", "Content-Type"],
+		exposedHeaders: ["Authorization"],
 	})
 );
 
