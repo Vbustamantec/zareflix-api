@@ -13,7 +13,8 @@
 			"src/**/*.ts",
 			"src/types/**/*.d.ts"
 		],
-		"types": ["express", "node"]
+		"types": ["express", "node", "cors"]
 	},
-	"include": ["src/**/*"]
+	"include": ["src/**/*"],
+	"exclude": ["node_modules"]
 }

@@ -7,29 +7,26 @@ import { checkJwt } from "./middlewares/auth.middleware";
 import Database from "./config/database";
 import routes from "./routes/index";
 import recommendationsRoutes from "./routes/recommendations.routes";
-import { syncUser } from "./middlewares/userSync.middleware";
+import type { CorsOptions } from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const corsOptions: CorsOptions = {
+	origin: ["https://dev.d1fqa93qe94bl.amplifyapp.com", "http://localhost:3000"],
+	credentials: true,
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+	allowedHeaders: ["Authorization", "Content-Type"],
+	exposedHeaders: ["Authorization"],
+};
+
 app.use(express.json());
-app.use(
-	cors({
-		origin: [
-			"https://dev.d1fqa93qe94bl.amplifyapp.com",
-			"http://localhost:3000",
-		],
-		credentials: true,
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-		allowedHeaders: ["Authorization", "Content-Type"],
-		exposedHeaders: ["Authorization"],
-	})
-);
+app.use(cors(corsOptions));
 
 app.get("/", (_req, res) => {
 	res.status(200).json({
 		success: true,
-		message: "Welcome to the API",
+		message: `Welcome to the API ${process.env.NODE_ENV}`,
 	});
 });
 
