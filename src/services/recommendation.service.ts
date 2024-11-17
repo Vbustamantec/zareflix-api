@@ -25,7 +25,6 @@ export class RecommendationService {
 		return this.genreFallbacks.default;
 	}
 
-	// Método para generar el prompt de texto para la IA
 	private generatePrompt(
 		title: string,
 		year: string,
