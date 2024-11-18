@@ -17,13 +17,10 @@ export class UserRepository extends BaseRepository<User> {
 	}
 
 	async createUser(userData: CreateUserDTO): Promise<User> {
-		const { email, nickname, auth0Id } = userData;
 		try {
 			await this.ensureConnection();
 			const user: Omit<User, "_id"> = {
-				auth0Id,
-				email,
-				nickname,
+				...userData,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				lastLogin: new Date(),
