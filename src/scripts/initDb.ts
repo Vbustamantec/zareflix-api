@@ -46,7 +46,6 @@ async function initializeDatabase() {
 	}
 }
 
-// Ejecutar si este archivo es llamado directamente
 if (require.main === module) {
 	initializeDatabase();
 }

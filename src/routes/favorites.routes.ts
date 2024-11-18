@@ -8,7 +8,6 @@ interface ReqLocal extends Request {
 }
 
 const router = express.Router();
-
 router.use(attachFavoriteMovieRepository);
 
 router.get("/", async (req: ReqLocal, res: Response, next: NextFunction) => {

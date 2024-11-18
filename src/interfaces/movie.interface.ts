@@ -16,6 +16,14 @@ export interface FavoriteMovie {
 	updatedAt: Date;
 }
 
+export interface RecommendedMovie {
+	Title: string;
+	Year: string;
+	Genre: string;
+	Plot: string;
+	[key: string]: any;
+}
+
 export interface AddFavoriteDTO {
 	movieId: string;
 	title: string;
@@ -31,12 +39,4 @@ export interface UpdateFavoriteDTO {
 		sentiment: "positive" | "negative" | "neutral";
 		score: number;
 	};
-}
-
-export interface RecommendedMovie {
-	Title: string;
-	Year: string;
-	Genre: string;
-	Plot: string;
-	[key: string]: any;
 }
