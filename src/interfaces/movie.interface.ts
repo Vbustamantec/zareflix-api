@@ -1,7 +1,7 @@
-
+import { ObjectId } from "bson";
 
 export interface FavoriteMovie {
-	_id: string;
+	_id?: ObjectId;
 	userId: string;
 	movieId: string;
 	title: string;
@@ -40,5 +40,3 @@ export interface RecommendedMovie {
 	Plot: string;
 	[key: string]: any;
 }
-
-
