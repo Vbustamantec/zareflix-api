@@ -1,4 +1,3 @@
-
 import { BaseRepository } from "./base.repository";
 import { User, CreateUserDTO } from "../interfaces/user.interface";
 
@@ -18,10 +17,13 @@ export class UserRepository extends BaseRepository<User> {
 	}
 
 	async createUser(userData: CreateUserDTO): Promise<User> {
+		const { email, nickname, auth0Id } = userData;
 		try {
 			await this.ensureConnection();
 			const user: Omit<User, "_id"> = {
-				...userData,
+				auth0Id,
+				email,
+				nickname,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				lastLogin: new Date(),

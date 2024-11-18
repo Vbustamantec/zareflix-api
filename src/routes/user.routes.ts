@@ -51,7 +51,6 @@ router.post(
 		try {
 			const repository = req.userRepository!;
 			const auth0User = req.auth?.payload;
-			const { email, nickname } = req.body;
 
 			if (!auth0User?.sub) {
 				throw new AppError(401, "No auth0Id found");
@@ -62,8 +61,8 @@ router.post(
 			if (!user) {
 				user = await repository.createUser({
 					auth0Id: auth0User.sub,
-					email,
-					nickname,
+					email: req.body.email,
+					nickname: req.body.nickname,
 				});
 			} else {
 				await repository.updateLastLogin(auth0User.sub);
