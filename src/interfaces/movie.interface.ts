@@ -1,13 +1,17 @@
-import { ObjectId } from "bson";
+
 
 export interface FavoriteMovie {
-	_id?: ObjectId;
+	_id: string;
 	userId: string;
 	movieId: string;
 	title: string;
 	poster: string;
 	year: string;
 	personalNotes?: string;
+	sentiment?: {
+		sentiment: string;
+		score: number;
+	};
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -23,6 +27,10 @@ export interface AddFavoriteDTO {
 export interface UpdateFavoriteDTO {
 	title?: string;
 	personalNotes?: string;
+	sentiment?: {
+		sentiment: "positive" | "negative" | "neutral";
+		score: number;
+	};
 }
 
 export interface RecommendedMovie {
@@ -30,5 +38,7 @@ export interface RecommendedMovie {
 	Year: string;
 	Genre: string;
 	Plot: string;
-	[key: string]: any; 
-  }
+	[key: string]: any;
+}
+
+

@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import userRoutes from "./user.routes";
 import favoritesRoutes from "./favorites.routes";
+import sentimentRoutes from "./sentiment.routes";
 import { handleError } from "../utils/errorHandler";
 import { syncUser } from "../middlewares/userSync.middleware";
 
@@ -11,6 +12,7 @@ router.use(syncUser);
 
 router.use("/user", userRoutes);
 router.use("/favorites", favoritesRoutes);
+router.use("/sentiment", sentimentRoutes);
 
 router.use((err: any, req: any, res: any, next: any) => {
 	const error = handleError(err);
