@@ -31,14 +31,6 @@ export const syncUser = async (
 		let user = await userRepo.findByAuth0Id(auth0User.sub);
 
 		if (!user) {
-			Logger.userSync({
-				action: "create",
-				auth0Id: auth0User.sub,
-				email: email,
-				nickname: nickname,
-				success: true,
-			});
-
 			user = await userRepo.createUser({
 				auth0Id: auth0User.sub,
 				email: email as string,
