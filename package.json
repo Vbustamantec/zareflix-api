@@ -14,30 +14,33 @@
 	},
 	"dependencies": {
 		"@huggingface/inference": "^2.8.1",
-		"axios": "^1.7.7",
+		"@types/cors": "^2.8.17",
+		"@types/express": "^4.17.21",
+		"@types/node": "^18.15.11",
 		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
 		"express": "^4.21.1",
 		"express-oauth2-jwt-bearer": "^1.6.0",
 		"jwks-rsa": "^3.1.0",
 		"mongodb": "^5.9.2",
-		"@types/cors": "^2.8.17",
-		"@types/express": "^4.17.21",
-		"@types/node": "^18.15.11",
 		"typescript": "^5.6.3"
-	  },
-	  "devDependencies": {
-		"@types/jest": "^29.5.0",
+	},
+	"devDependencies": {
+		"@types/jest": "^29.5.14",
+		"@types/supertest": "^6.0.2",
 		"@typescript-eslint/eslint-plugin": "^5.57.1",
 		"@typescript-eslint/parser": "^5.57.1",
 		"eslint": "^8.37.0",
-		"jest": "^29.5.0",
+		"jest": "^29.7.0",
+		"jest-fetch-mock": "^3.0.3",
+		"mongodb-memory-server": "^10.1.2",
 		"nodemon": "^2.0.22",
 		"prettier": "^2.8.7",
-		"ts-jest": "^29.1.0",
+		"supertest": "^7.0.0",
+		"ts-jest": "^29.2.5",
 		"ts-node": "^10.9.2",
 		"ts-node-dev": "^2.0.0"
-	  },
+	},
 	"directories": {
 		"test": "tests"
 	},
