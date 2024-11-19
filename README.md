@@ -9,11 +9,10 @@ ZareFlix API is a RESTful backend service built with Node.js/Express and MongoDB
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#api-documentation)
-- [API Documentation](#getting-started)
-- [Architecture & Design Patterns](#architecture-&-design-patterns)
+- [API Documentation](#api-documentation)
+- [User Routes](#user-routes)
 - [Environment Setup](#environment-setup)
 - [Local Development](#local-development)
-- [API Documentation](#getting-started)
 
 ## Features
 
