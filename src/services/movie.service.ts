@@ -23,3 +23,26 @@ export const getMovieById = async (movieId: string) => {
 		throw new Error("Failed to fetch movie details");
 	}
 };
+
+export const searchMovies = async (title: string) => {
+	try {
+		const response = await fetch(
+			`${BASE_URL}/?apikey=${OMDB_API_KEY}&s=${title}&type=movie`
+		);
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		if (data.Response === "False") {
+			throw new Error(data.Error || "Movies not found");
+		}
+
+		return data;
+	} catch (error) {
+		console.error("Error searching movies:", error);
+		throw new Error("Failed to search movies");
+	}
+};

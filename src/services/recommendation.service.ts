@@ -1,6 +1,9 @@
 import { HfInference } from "@huggingface/inference";
-import { getMovieById } from "./movie.service";
-import { RecommendedMovie } from "../interfaces/movie.interface";
+import { getMovieById, searchMovies } from "./movie.service";
+import {
+	MovieRecommendation,
+	RecommendationResponse,
+} from "../interfaces/movie.interface";
 import { GENRE_FALLBACKS } from "../constants/fallbacks";
 
 export class RecommendationService {
@@ -15,14 +18,19 @@ export class RecommendationService {
 		this.hf = new HfInference(apiKey);
 	}
 
-	private getFallbackRecommendations(genres: string[]): string[] {
-		for (const genre of genres) {
-			const normalizedGenre = genre.trim();
-			if (this.genreFallbacks[normalizedGenre]) {
-				return this.genreFallbacks[normalizedGenre];
+	private async getMovieDetailsFromOMDB(
+		title: string
+	): Promise<MovieRecommendation | null> {
+		try {
+			const searchResult = await searchMovies(title);
+			if (searchResult.Search && searchResult.Search.length > 0) {
+				return searchResult.Search[0];
 			}
+			return null;
+		} catch (error) {
+			console.error(`Error fetching details for movie: ${title}`, error);
+			return null;
 		}
-		return this.genreFallbacks.default;
 	}
 
 	private generatePrompt(
@@ -43,53 +51,29 @@ Remember:
 `;
 	}
 
-	private processRecommendations(rawText: string): string[] {
-		return rawText
-			.split("\n")
-			.map((line) => line.trim())
-			.filter(
-				(line) => /^\d\./.test(line) && line.includes("(") && line.includes(")")
-			)
-			.map((line, index) => {
-				let cleanLine = line
-					.replace(/\\/g, "")
-					.replace(/"/g, "")
-					.replace(/\s+/g, " ")
-					.trim();
-				return `${index + 1}. ${cleanLine.replace(/^\d+\.\s*/, "")}`;
+	private extractMovieTitles(recommendations: string[]): string[] {
+		return recommendations
+			.map((recommendation) => {
+				const match = recommendation.match(/^\d+\.\s+(.*?)\s+\(\d{4}\)/);
+				return match ? match[1].trim() : "";
 			})
-			.slice(0, 5);
-	}
-
-	private completeRecommendations(
-		recommendations: string[],
-		genres: string[]
-	): string[] {
-		const fallbackRecommendations = this.getFallbackRecommendations(genres);
-
-		const neededFallbacks = fallbackRecommendations
-			.slice(0, 5 - recommendations.length)
-			.map((fallback, index) => {
-				const number = recommendations.length + index + 1;
-				return `${number}. ${fallback.replace(/^\d+\.\s*/, "")}`;
-			});
-
-		return [...recommendations, ...neededFallbacks];
+			.filter(Boolean);
 	}
 
 	public async getRecommendations(
 		movieId: string
-	): Promise<{ movie: Partial<RecommendedMovie>; recommendations: string[] }> {
-		const movie = await getMovieById(movieId);
-
-		if (!movie) {
-			throw new Error("Movie not found");
-		}
-
-		const { Title, Year, Genre, Plot } = movie;
-		const prompt = this.generatePrompt(Title, Year, Genre, Plot);
-
+	): Promise<RecommendationResponse> {
 		try {
+			// 1. Obtener detalles de la película original
+			const movie = await getMovieById(movieId);
+			if (!movie) {
+				throw new Error("Movie not found");
+			}
+
+			const { Title, Year, Genre, Plot } = movie;
+
+			// 2. Generar y obtener recomendaciones AI
+			const prompt = this.generatePrompt(Title, Year, Genre, Plot);
 			const result = await this.hf.textGeneration({
 				model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
 				inputs: prompt,
@@ -99,19 +83,39 @@ Remember:
 					top_p: 0.95,
 					repetition_penalty: 1.2,
 					do_sample: true,
-					early_stopping: true,
-					num_beams: 5,
 				},
 			});
 
-			let recommendations = this.processRecommendations(result.generated_text);
+			// 3. Procesar recomendaciones
+			const recommendations = result.generated_text
+				.split("\n")
+				.filter((line) => /^\d+\./.test(line));
 
-			if (recommendations.length > 0 && recommendations.length < 5) {
-				const genres = Genre.split(",").map((g: string) => g.trim());
-				recommendations = this.completeRecommendations(recommendations, genres);
-			} else if (recommendations.length === 0) {
-				const genres = Genre.split(",").map((g: string) => g.trim());
-				recommendations = this.getFallbackRecommendations(genres);
+			// 4. Extraer títulos y obtener detalles
+			const movieTitles = this.extractMovieTitles(recommendations);
+			const movieDetailsPromises = movieTitles.map((title) =>
+				this.getMovieDetailsFromOMDB(title)
+			);
+
+			const movieDetails = await Promise.all(movieDetailsPromises);
+			const validMovieDetails = movieDetails
+				.filter((movie): movie is MovieRecommendation => movie !== null)
+				.slice(0, 5);
+
+			// 5. Si no hay suficientes recomendaciones, usar fallbacks
+			if (validMovieDetails.length < 5) {
+				const genres: string[] = Genre.split(",").map((genre: string) => genre.trim());
+				const fallbackMovies = await Promise.all(
+					this.genreFallbacks[genres[0] || "default"].map((title) =>
+						this.getMovieDetailsFromOMDB(title)
+					)
+				);
+
+				const validFallbacks = fallbackMovies.filter(
+					(movie): movie is MovieRecommendation => movie !== null
+				);
+
+				validMovieDetails.push(...validFallbacks);
 			}
 
 			return {
@@ -120,19 +124,11 @@ Remember:
 					genre: Genre,
 					year: Year,
 				},
-				recommendations,
+				recommendations: validMovieDetails.slice(0, 5),
 			};
 		} catch (error) {
-			console.error("Error during recommendation generation:", error);
-			const genres = Genre.split(",").map((g: string) => g.trim());
-			return {
-				movie: {
-					title: Title,
-					genre: Genre,
-					year: Year,
-				},
-				recommendations: this.getFallbackRecommendations(genres),
-			};
+			console.error("Error getting recommendations:", error);
+			throw error;
 		}
 	}
 }

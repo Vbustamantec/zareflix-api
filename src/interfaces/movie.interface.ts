@@ -40,3 +40,20 @@ export interface UpdateFavoriteDTO {
 		score: number;
 	};
 }
+
+export interface MovieRecommendation {
+	Title: string;
+	Year: string;
+	imdbID: string;
+	Poster: string;
+	Type: string;
+}
+
+export interface RecommendationResponse {
+	movie: {
+		title: string;
+		genre: string;
+		year: string;
+	};
+	recommendations: MovieRecommendation[];
+}
