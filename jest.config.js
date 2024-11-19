@@ -6,6 +6,11 @@ const config = {
 	verbose: true,
 	setupFiles: ["<rootDir>/jest.setup.ts"],
 	testTimeout: 10000,
+	globals: {
+		"ts-jest": {
+			tsconfig: "tsconfig.test.json",
+		},
+	},
 };
 
 module.exports = config;
