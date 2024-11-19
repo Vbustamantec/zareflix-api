@@ -16,6 +16,6 @@
 		],
 		"types": ["express", "node", "cors", "jest"]
 	},
-	"include": ["src/**/*"],
+	"include": ["src/**/*", "tests/**/*.test.ts"],
 	"exclude": ["node_modules"]
 }
