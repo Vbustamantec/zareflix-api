@@ -21,13 +21,6 @@ app.use(
 	})
 );
 
-app.get("/", (_req, res) => {
-	res.status(200).json({
-		success: true,
-		message: `Welcome to the API ${process.env.NODE_ENV}`,
-	});
-});
-
 app.use("/recommendations", recommendationsRoutes);
 
 app.use("/api", checkJwt, routes);
