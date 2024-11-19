@@ -55,61 +55,6 @@ Authorization: Bearer <your_jwt_token>
 
 ## User Routes
 
-### Get Current User
-
-```http
-GET /api/user/me
-```
-
-Response
-
-```json
-{
-	"success": true,
-	"data": {
-		"_id": "507f1f77bcf86cd799439011",
-		"auth0Id": "auth0|123456789",
-		"email": "user@example.com",
-		"nickname": "moviefan",
-		"createdAt": "2024-03-19T10:00:00Z",
-		"updatedAt": "2024-03-19T10:00:00Z",
-		"lastLogin": "2024-03-19T10:00:00Z"
-	}
-}
-```
-
-### Sync User Data
-
-```http
-POST /api/user/sync
-```
-
-Request Body:
-
-```json
-{
-	"email": "user@example.com",
-	"nickname": "moviefan"
-}
-```
-
-Response:
-
-```json
-{
-	"success": true,
-	"data": {
-		"_id": "507f1f77bcf86cd799439011",
-		"auth0Id": "auth0|123456789",
-		"email": "user@example.com",
-		"nickname": "moviefan",
-		"createdAt": "2024-03-19T10:00:00Z",
-		"updatedAt": "2024-03-19T10:00:00Z",
-		"lastLogin": "2024-03-19T10:00:00Z"
-	}
-}
-```
-
 ### Favorites Routes
 
 ### Get User Favorites
