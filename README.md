@@ -44,7 +44,7 @@ ZareFlix API is a RESTful backend service built with Node.js/Express and MongoDB
 
 ## API Documentation
 
-###Authentication
+### Authentication
 
 All endpoints except /recommendations require a valid Auth0 JWT token in the Authorization header:
 
