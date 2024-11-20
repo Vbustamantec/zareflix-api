@@ -53,7 +53,7 @@ Remember:
 
 	private extractMovieTitles(recommendations: string[]): string[] {
 		return recommendations
-			.map((recommendation) => {
+			?.map((recommendation) => {
 				const match = recommendation.match(/^\d+\.\s+(.*?)\s+\(\d{4}\)/);
 				return match ? match[1].trim() : "";
 			})
@@ -93,7 +93,7 @@ Remember:
 
 			// 4. Extraer títulos y obtener detalles
 			const movieTitles = this.extractMovieTitles(recommendations);
-			const movieDetailsPromises = movieTitles.map((title) =>
+			const movieDetailsPromises = movieTitles?.map((title) =>
 				this.getMovieDetailsFromOMDB(title)
 			);
 
@@ -104,18 +104,26 @@ Remember:
 
 			// 5. Si no hay suficientes recomendaciones, usar fallbacks
 			if (validMovieDetails.length < 5) {
-				const genres: string[] = Genre.split(",").map((genre: string) => genre.trim());
-				const fallbackMovies = await Promise.all(
-					this.genreFallbacks[genres[0] || "default"].map((title) =>
-						this.getMovieDetailsFromOMDB(title)
-					)
+				const genres: string[] = Genre.split(",")?.map((genre: string) =>
+					genre.trim()
 				);
+				const fallbackGenre = genres[0] || "default";
+				const fallbackTitles = this.genreFallbacks[fallbackGenre] || [];
 
-				const validFallbacks = fallbackMovies.filter(
+				const movieDetailsPromises = fallbackTitles.map(async (title) => {
+					try {
+						return await this.getMovieDetailsFromOMDB(title);
+					} catch (error) {
+						console.error(`Error fetching details for movie: ${title}`, error);
+						return null;
+					}
+				});
+
+				const fallbackMovies = (await Promise.all(movieDetailsPromises)).filter(
 					(movie): movie is MovieRecommendation => movie !== null
 				);
 
-				validMovieDetails.push(...validFallbacks);
+				validMovieDetails.push(...fallbackMovies);
 			}
 
 			return {
