@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { sentimentService } from "../services/sentiment.service";
+import { validators } from "../validators/zod.validators";
 
 const router = Router();
 
-router.post("/analyze", async (req, res) => {
+router.post("/analyze", validators.sentiment.analyze, async (req, res) => {
 	try {
 		const { text } = req.body;
 

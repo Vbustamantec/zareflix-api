@@ -12,8 +12,8 @@ const options = {
 				url: "https://opensource.org/licenses/ISC",
 			},
 			contact: {
-				name: "API Support",
-				email: "your-email@example.com",
+				name: "Victor Bustamante",
+				email: "victorbust.c@zarego.com",
 			},
 		},
 		servers: [
@@ -43,7 +43,7 @@ const options = {
 			},
 		],
 	},
-	apis: ["./src/docs/*.yml"], 
+	apis: ["./src/docs/*.yml"],
 };
 
 export const specs = swaggerJsdoc(options);

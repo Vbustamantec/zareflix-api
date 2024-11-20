@@ -2,6 +2,7 @@ import express, { Response, NextFunction } from "express";
 import { AppError } from "../utils/errorHandler";
 import { attachUserRepository } from "../middlewares/repository.middleware";
 import { UserRepository } from "../repositories/user.repository";
+import { validators } from "../validators/zod.validators";
 
 const router = express.Router();
 
@@ -47,6 +48,7 @@ router.get(
 
 router.post(
 	"/sync",
+	validators.users.sync,
 	async (req: UserRequest, res: Response, next: NextFunction) => {
 		try {
 			const repository = req.userRepository!;
