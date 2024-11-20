@@ -1,0 +1,62 @@
+components:
+  schemas:
+    MovieRecommendation:
+      type: object
+      properties:
+        Title:
+          type: string
+        Year:
+          type: string
+        imdbID:
+          type: string
+        Type:
+          type: string
+        Poster:
+          type: string
+
+    RecommendationResponse:
+      type: object
+      properties:
+        movie:
+          type: object
+          properties:
+            title:
+              type: string
+            genre:
+              type: string
+            year:
+              type: string
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovieRecommendation'
+
+paths:
+  /recommendations/{movieId}:
+    get:
+      tags:
+        - Recommendations
+      summary: Get movie recommendations
+      parameters:
+        - in: path
+          name: movieId
+          required: true
+          schema:
+            type: string
+          description: IMDB ID of the movie
+      responses:
+        200:
+          description: Movie recommendations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/RecommendationResponse'
+        400:
+          description: Bad request
+        500:
+          description: Server error

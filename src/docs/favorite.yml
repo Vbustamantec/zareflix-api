@@ -1,0 +1,182 @@
+components:
+  schemas:
+    FavoriteMovie:
+      type: object
+      required:
+        - userId
+        - movieId
+        - title
+        - poster
+        - year
+      properties:
+        _id:
+          type: string
+          description: The auto-generated id of the favorite movie
+        userId:
+          type: string
+          description: The Auth0 ID of the user
+        movieId:
+          type: string
+          description: The IMDB ID of the movie
+        title:
+          type: string
+          description: The title of the movie
+        poster:
+          type: string
+          description: URL to the movie poster
+        year:
+          type: string
+          description: Release year of the movie
+        personalNotes:
+          type: string
+          description: User's personal notes about the movie
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+paths:
+  /api/favorites:
+    get:
+      tags:
+        - Favorites
+      summary: Get user's favorite movies
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of favorite movies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FavoriteMovie"
+        401:
+          description: Unauthorized
+        500:
+          description: Server error
+
+    post:
+      tags:
+        - Favorites
+      summary: Add a movie to favorites
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - movieId
+                - title
+                - poster
+                - year
+              properties:
+                movieId:
+                  type: string
+                title:
+                  type: string
+                poster:
+                  type: string
+                year:
+                  type: string
+                personalNotes:
+                  type: string
+      responses:
+        201:
+          description: Movie added to favorites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: "#/components/schemas/FavoriteMovie"
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Server error
+
+  /api/favorites/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: The favorite movie ID
+
+    put:
+      tags:
+        - Favorites
+      summary: Update a favorite movie
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                personalNotes:
+                  type: string
+      responses:
+        200:
+          description: Movie updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: "#/components/schemas/FavoriteMovie"
+        404:
+          description: Favorite not found
+        401:
+          description: Unauthorized
+        500:
+          description: Server error
+
+    delete:
+      tags:
+        - Favorites
+      summary: Remove a movie from favorites
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Movie removed from favorites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        404:
+          description: Favorite not found
+        401:
+          description: Unauthorized
+        500:
+          description: Server error

@@ -1,0 +1,44 @@
+paths:
+  /api/sentiment/analyze:
+    post:
+      tags:
+        - Sentiment
+      summary: Analyze text sentiment
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: Text to analyze
+      responses:
+        200:
+          description: Sentiment analysis results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      sentiment:
+                        type: string
+                        enum: [positive, negative, neutral]
+                      score:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+        400:
+          description: Bad request
+        500:
+          description: Server error

@@ -44,15 +44,39 @@ ZareFlix API is a RESTful backend service built with Node.js/Express and MongoDB
 
 ## API Documentation
 
+### Swagger Documentation
+
+The API documentation is available through Swagger UI when the server is running. You can access it at:
+
+- Development: http://localhost:3001/api-docs
+- Production: https://zareflix-api.onrender.com/api-docs
+
 ### Authentication
 
-All endpoints except /recommendations require a valid Auth0 JWT token in the Authorization header:
+All endpoints except `/recommendations` require a valid Auth0 JWT token in the Authorization header:
 
 ```bash
-Authorization: Bearer <your_jwt_token>
+Authorization: Bearer
 ```
 
-## User Routes
+### Available Endpoints
+
+#### Favorites Routes
+
+- `GET /api/favorites` - Get user's favorite movies
+- `POST /api/favorites` - Add a movie to favorites
+- `PUT /api/favorites/:id` - Update a favorite movie
+- `DELETE /api/favorites/:id` - Remove a movie from favorites
+
+#### Recommendations Routes
+
+- `GET /recommendations/:movieId` - Get movie recommendations
+
+#### Sentiment Routes
+
+- `POST /api/sentiment/analyze` - Analyze text sentiment
+
+For detailed request/response schemas and examples, please refer to the Swagger documentation.
 
 ### Favorites Routes
 

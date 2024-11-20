@@ -3,6 +3,8 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import { specs } from "./config/swagger";
 import { checkJwt } from "./middlewares/auth.middleware";
 import Database from "./config/database";
 import routes from "./routes/index";
@@ -21,8 +23,16 @@ app.use(
 	})
 );
 
-app.use("/recommendations", recommendationsRoutes);
+app.use(
+	"/api-docs",
+	swaggerUi.serve,
+	swaggerUi.setup(specs, {
+		customCssUrl:
+			"https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.0/themes/3.x/theme-material.css",
+	})
+);
 
+app.use("/recommendations", recommendationsRoutes);
 app.use("/api", checkJwt, routes);
 
 app.get("/health", (_req, res) => {
@@ -37,6 +47,9 @@ const startServer = async () => {
 
 		app.listen(PORT, () => {
 			console.log(`Server running on http://localhost:${PORT}`);
+			console.log(
+				`API Documentation available on http://localhost:${PORT}/api-docs`
+			);
 		});
 	} catch (error) {
 		console.error("Failed to start server:", error);
