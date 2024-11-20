@@ -1,4 +1,5 @@
 import { MongoClient, Db } from "mongodb";
+import { MongoMemoryServer } from "mongodb-memory-server";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -34,6 +35,11 @@ export class Database {
 		if (!this.client) {
 			try {
 				let uri = process.env.MONGODB_URI;
+
+				if (process.env.NODE_ENV === "test") {
+					const mongod = await MongoMemoryServer.create();
+					uri = mongod.getUri();
+				}
 
 				if (!uri) {
 					throw new Error("MONGODB_URI is not defined");
