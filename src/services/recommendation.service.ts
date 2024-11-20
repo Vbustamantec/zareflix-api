@@ -101,72 +101,47 @@ Remember:
 				.filter((movie): movie is MovieRecommendation => movie !== null)
 				.slice(0, 5);
 
-			// 4. Si no hay suficientes recomendaciones AI, usar fallbacks
+			// 4. Si no hay suficientes recomendaciones AI, usar fallbacks basados en géneros
 			if (validMovieDetails.length < 5) {
-				const genres: string[] = Genre.split(",")?.map((genre: string) =>
+				const genres: string[] = Genre.split(",").map((genre: string) =>
 					genre.trim()
 				);
-				const fallbackGenre = genres[0] || "default";
-				const fallbackTitles =
-					this.genreFallbacks[fallbackGenre] || this.genreFallbacks["default"];
-
 				const existingTitles = new Set(validMovieDetails.map((m) => m.Title));
-				const filteredFallbackTitles = fallbackTitles.filter(
-					(title) => !existingTitles.has(title)
-				);
 
-				const fallbackMovieDetailsPromises = filteredFallbackTitles.map(
-					async (title) => {
-						try {
-							return await this.getMovieDetailsFromOMDB(title);
-						} catch (error) {
-							console.error(
-								`Error fetching details for movie: ${title}`,
-								error
-							);
-							return null;
+				for (const genre of genres) {
+					const fallbackTitles = this.genreFallbacks[genre] || [];
+
+					for (const title of fallbackTitles) {
+						if (validMovieDetails.length >= 5) break;
+						if (existingTitles.has(title)) continue; // Evitar duplicados
+
+						const movieDetail = await this.getMovieDetailsFromOMDB(title);
+						if (movieDetail) {
+							validMovieDetails.push(movieDetail);
+							existingTitles.add(title);
 						}
 					}
-				);
 
-				const fallbackMovies = (
-					await Promise.all(fallbackMovieDetailsPromises)
-				).filter((movie): movie is MovieRecommendation => movie !== null);
+					if (validMovieDetails.length >= 5) break;
+				}
 
-				const needed = 5 - validMovieDetails.length;
-				validMovieDetails.push(...fallbackMovies.slice(0, needed));
-			}
+				// 5. Si aún faltan recomendaciones, usar fallbacks de 'default'
+				if (validMovieDetails.length < 5) {
+					const fallbackTitles = this.genreFallbacks["default"];
+					for (const title of fallbackTitles) {
+						if (validMovieDetails.length >= 5) break;
+						if (existingTitles.has(title)) continue; // Evitar duplicados
 
-			if (validMovieDetails.length < 5) {
-				const fallbackTitles = this.genreFallbacks["default"];
-
-				const existingTitles = new Set(validMovieDetails.map((m) => m.Title));
-				const filteredFallbackTitles = fallbackTitles.filter(
-					(title) => !existingTitles.has(title)
-				);
-
-				const additionalFallbackPromises = filteredFallbackTitles.map(
-					async (title) => {
-						try {
-							return await this.getMovieDetailsFromOMDB(title);
-						} catch (error) {
-							console.error(
-								`Error fetching details for movie: ${title}`,
-								error
-							);
-							return null;
+						const movieDetail = await this.getMovieDetailsFromOMDB(title);
+						if (movieDetail) {
+							validMovieDetails.push(movieDetail);
+							existingTitles.add(title);
 						}
 					}
-				);
-
-				const additionalFallbackMovies = (
-					await Promise.all(additionalFallbackPromises)
-				).filter((movie): movie is MovieRecommendation => movie !== null);
-
-				const needed = 5 - validMovieDetails.length;
-				validMovieDetails.push(...additionalFallbackMovies.slice(0, needed));
+				}
 			}
 
+			// Asegurarse de que siempre haya 5 recomendaciones
 			validMovieDetails = validMovieDetails.slice(0, 5);
 
 			return {
