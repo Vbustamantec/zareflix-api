@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { RecommendationService } from "../services/recommendation.service";
-import { validators } from "../validators/zod.validators";
 
 const router = Router();
 const recommendationService = new RecommendationService();
 
-router.get("/:movieId", validators.recommendations.getById, async (req, res) => {
+router.get("/:movieId", async (req, res) => {
 	try {
 		const movieId = req.params.movieId;
 
